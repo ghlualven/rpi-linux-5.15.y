@@ -1,0 +1,126 @@
+{
+        // See https://go.microsoft.com/fwlink/?LinkId=733558
+        // for the documentation about the tasks.json format
+        "version": "2.0.0",
+        "options": {
+                // refer to: 
+                // https://www.raspberrypi.com/documentation/computers/linux_kernel.html#cross-compiling-the-kernel
+                //
+                //
+
+                "env": {
+                        "NPROC": "6",  // use for -j n, where n is the number of processors * 1.5
+
+                        // 64bit, For Raspberry Pi 3, 3+, 4, 400 and Zero 2 W, and Raspberry Pi Compute Modules 3, 3+ and 4
+                        "KERNEL": "kernel8", 
+                        "ARCH": "arm64",
+                        "CROSS_COMPILE": "aarch64-linux-gnu-",
+                        "DEFCONFIG": "bcm2711_defconfig",
+                        "IMAGE": "Image"
+                }
+
+                // "env": {
+                //         // 32bit, For Raspberry Pi 1, Zero and Zero W, and Raspberry Pi Compute Module 1:
+                //         "KERNEL": "kernel", 
+                //         "ARCH": "arm",
+                //         "CROSS_COMPILE": "arm-linux-gnueabihf-",
+                //         "DEFCONFIG": "bcmrpi_defconfig",
+                //         "IMAGE": "zImage"
+                // }
+
+                // "env": {
+                //         // 32bit, For Raspberry Pi 3, 3+, 4, 400 and Zero 2 W, and Raspberry Pi Compute Modules 3, 3+
+                //         "KERNEL": "kernel7", 
+                //         "ARCH": "arm",
+                //         "CROSS_COMPILE": "arm-linux-gnueabihf-",
+                //         "DEFCONFIG": "bcm2709_defconfig",
+                //         "IMAGE": "zImage"
+                // }
+
+                // "env": {
+                //         // 32bit, For Raspberry Pi 4 and 400, and Raspberry Pi Compute Module 4:
+                //         "KERNEL": "kernel7l", 
+                //         "ARCH": "arm",
+                //         "CROSS_COMPILE": "arm-linux-gnueabihf-",
+                //         "DEFCONFIG": "bcm2711_defconfig",
+                //         "IMAGE": "zImage"
+                // }
+        },
+        "tasks": [
+                {
+                        "label": "[CM4] clean",
+                        "type": "shell",
+                        "command": "make",
+                        "args": [
+                                "O=${workspaceFolder}/build",
+                                "clean"
+                        ]
+                },
+                {
+                        "label": "[CM4] distclean",
+                        "type": "shell",
+                        "command": "make",
+                        "args": [
+                                "O=${workspaceFolder}/build",
+                                "distclean"
+                        ]
+                },
+
+                {
+                        "label": "[CM4] build defconfig",
+                        "type": "shell",
+                        "command": "make",
+                        "args": [
+                                "O=${workspaceFolder}/build",
+                                "${DEFCONFIG}"
+                        ]
+                },
+
+                {
+                        "label": "[CM4] build image",
+                        "type": "shell",
+                        "command": "make",
+                        "args": [
+                                "-j",
+                                "${NPROC}",
+                                "O=${workspaceFolder}/build",
+                                "${IMAGE}"
+                        ]
+                },
+                {
+                        "label": "[CM4] build modules",
+                        "type": "shell",
+                        "command": "make",
+                        "args": [
+                                "-j",
+                                "${NPROC}",
+                                "O=${workspaceFolder}/build",
+                                "modules"
+                        ]
+                },
+                {
+                        "label": "[CM4] build dtbs",
+                        "type": "shell",
+                        "command": "make",
+                        "args": [
+                                "-j",
+                                "${NPROC}",
+                                "O=${workspaceFolder}/build",
+                                "dtbs"
+                        ]
+                },
+                {
+                        "label": "[CM4] build all",
+                        "type": "shell",
+                        "command": "make",
+                        "args": [
+                                "-j",
+                                "${NPROC}",
+                                "O=${workspaceFolder}/build",
+                                "${IMAGE}",
+                                "modules",
+                                "dtbs"
+                        ]
+                }
+        ]
+}
